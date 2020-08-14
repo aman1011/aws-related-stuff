@@ -80,6 +80,7 @@ for account in aws_accounts:
 
 # Now we write the data in a file using pandas
 with open('new_data.txt', 'w') as f:
+    f.write("Placement-Group Name:  \t\t\t InstanceIds \n")
     for key in placement_group_instance_dict.keys():
         if placement_group_instance_dict[key] == []:
             f.write(key + ":  " + "Empty " + "\n")
