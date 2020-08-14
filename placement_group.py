@@ -38,7 +38,7 @@ def get_instances_for_placement_group(ec2_client, placement_group_name):
     :param placement_group_name: placement group name
     :return: list of instance id's
     """
-    instance_response = ec2_client.describe_instnaces(
+    instance_response = ec2_client.describe_instances(
         Filters=[
             {
                 'Name': 'placement-group-name',
@@ -70,7 +70,6 @@ for account in aws_accounts:
         print(session)
         ec2_client = session.client("ec2")
         placement_group_response = ec2_client.describe_placement_groups()
-        print_placement_group(placement_group_response)
 
         # Iterate over the placement group and use
         # it to filter the instances.
@@ -88,4 +87,5 @@ with open('new_data.txt', 'w') as f:
             f.write(key + ": ")
             for i in placement_group_instance_dict[key]:
                 for j in i:
-                    f.write(j + " " + "\n")
+                    f.write(j + ", ")
+            f.write("\n")
