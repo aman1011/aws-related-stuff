@@ -52,7 +52,7 @@ def get_instances_for_placement_group(ec2_client, placement_group_name):
     # and look for key instanceId.
     instances = []
     for reservation in instance_response['Reservations']:
-        instances.append([instance['InstanceId'] for instance in reservation['Instances']])
+        instances.append(instance['InstanceId'] for instance in reservation['Instances'])
 
     return instances
 
@@ -80,12 +80,4 @@ for account in aws_accounts:
 
 
 # Now we write the data in a file using pandas
-with open('new_data.txt', 'w') as f:
-    for key in placement_group_instance_dict.keys():
-        if placement_group_instance_dict[key] == []:
-            f.write(key + ":  " + "Empty " + "\n")
-        else:
-            f.write(key + ": ")
-            for i in placement_group_instance_dict[key]:
-                for j in i:
-                    f.write(j + " " + "\n")
+pandas.DataFrame.from_dict(placement_group_instance_dict).to_csv('data.csv')
