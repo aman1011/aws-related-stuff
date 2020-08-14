@@ -70,7 +70,6 @@ for account in aws_accounts:
         print(session)
         ec2_client = session.client("ec2")
         placement_group_response = ec2_client.describe_placement_groups()
-        print_placement_group(placement_group_response)
 
         # Iterate over the placement group and use
         # it to filter the instances.
