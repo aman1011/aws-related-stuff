@@ -36,7 +36,7 @@ def get_aws_accounts():
 # Method for hard coding the region.
 # Note to create a dict of account and regions
 def get_regions_for_stlb_account():
-    return ["use-east-1", "us-east-2"]
+    return ["us-east-1", "us-east-2"]
 
 
 # Trial method for printing placement group
