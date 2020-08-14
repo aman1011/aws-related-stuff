@@ -38,7 +38,7 @@ def get_instances_for_placement_group(ec2_client, placement_group_name):
     :param placement_group_name: placement group name
     :return: list of instance id's
     """
-    instance_response = ec2_client.describe_instnaces(
+    instance_response = ec2_client.describe_instances(
         Filters=[
             {
                 'Name': 'placement-group-name',
