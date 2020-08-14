@@ -80,4 +80,12 @@ for account in aws_accounts:
 
 
 # Now we write the data in a file using pandas
-pandas.DataFrame.from_dict(placement_group_instance_dict).to_csv('data.csv')
+with open('new_data.txt', 'w') as f:
+    for key in placement_group_instance_dict.keys():
+        if placement_group_instance_dict[key] == []:
+            f.write(key + ":  " + "Empty " + "\n")
+        else:
+            f.write(key + ": ")
+            for i in placement_group_instance_dict[key]:
+                for j in i:
+                    f.write(j + " " + "\n")
