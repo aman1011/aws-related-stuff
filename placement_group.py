@@ -53,10 +53,7 @@ for account in aws_accounts:
     regions = get_regions_for_stlb_account()
     for region in regions:
         print("Establishing a session for account " + account + " and region " + region)
-        try:
-            session = create_session(region, account)
-        except Exception as e:
-            print(e)
+        session = create_session(region, account)
         ec2_client = session.client("ec2")
         response = ec2_client.describe_placement_groups()
         print_placement_group(response)
