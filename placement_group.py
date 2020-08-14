@@ -38,7 +38,7 @@ def get_instances_for_placement_group(ec2_client, placement_group_name):
     :param placement_group_name: placement group name
     :return: list of instance id's
     """
-    instance_response = ec2_client.describe_instnaces(
+    instance_response = ec2_client.describe_instances(
         Filters=[
             {
                 'Name': 'placement-group-name',
@@ -64,13 +64,13 @@ placement_group_instance_dict = {}
 for account in aws_accounts:
     print("Processing account ", account)
     regions = get_regions_for_stlb_account()
+    regions = get_regions_for_stlb_account()
     for region in regions:
         print("Establishing a session for account " + account + " and region " + region)
         session = create_session(region, account)
         print(session)
         ec2_client = session.client("ec2")
         placement_group_response = ec2_client.describe_placement_groups()
-        print_placement_group(placement_group_response)
 
         # Iterate over the placement group and use
         # it to filter the instances.
