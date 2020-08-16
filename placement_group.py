@@ -62,12 +62,15 @@ def get_instances_for_placement_group(ec2_client, placement_group_name):
 print("Starting to get accounts ....")
 aws_accounts = get_aws_accounts()
 placement_group_instance_dict = {}
+f = open('new_data.txt', 'w')
 
 for account in aws_accounts:
     print("Processing account ", account)
+    f.print(f"<<<<<<<<<<<<<<Account Profile {account} ")
     regions = get_regions_for_stlb_account()
     for region in regions:
         print("Establishing a session for account " + account + " and region " + region)
+        f.print(f" and Region {region} >>>>>>>>>>>>>> \n")
         session = None
         try:
             session = create_session(region, account)
@@ -85,27 +88,10 @@ for account in aws_accounts:
         print("Creating local dictionary ....")
         for group in placement_group_response['PlacementGroups']:
             try:
-                placement_group_instance_dict[group['GroupName']] = get_instances_for_placement_group(ec2_client, group['GroupName'])
+                for k in get_instances_for_placement_group(ec2_client, group['GroupName']):
+                    f.write(f"{k}, ")
             except UnknownClientMethodError as e:
                 print(f"Failed in getting instance info for {group['GroupName']} ....")
-
-
-# Now we write the data in a file using pandas
-print("Writing data to local file ....")
-with open('new_data.txt', 'w') as f:
-    f.write("Placement-Group Name:  \t\t\t InstanceIds \n")
-    count = 1
-    for key in placement_group_instance_dict.keys():
-        if placement_group_instance_dict[key] == []:
-            f.write(str(count) + ". " + key + ":  " + "Empty " + "\n")
-            count = count + 1
-        else:
-            f.write(str(count) + ". " + key + ": ")
-            count = count + 1
-            for i in placement_group_instance_dict[key]:
-                for j in i:
-                    f.write(j + ", ")
             f.write("\n")
 
-
-print("Done ....")
+f.close()
