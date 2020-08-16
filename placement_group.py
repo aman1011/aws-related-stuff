@@ -1,4 +1,5 @@
 import boto3
+from botocore.exceptions import UnknownClientMethodError, ProfileNotFound
 import pandas
 
 
@@ -38,6 +39,7 @@ def get_instances_for_placement_group(ec2_client, placement_group_name):
     :param placement_group_name: placement group name
     :return: list of instance id's
     """
+    print("Calling describe instances API ....")
     instance_response = ec2_client.describe_instances(
         Filters=[
             {
@@ -66,17 +68,44 @@ for account in aws_accounts:
     regions = get_regions_for_stlb_account()
     for region in regions:
         print("Establishing a session for account " + account + " and region " + region)
-        session = create_session(region, account)
-        print(session)
+        session = None
+        try:
+            session = create_session(region, account)
+        except ProfileNotFound as e:
+            print(f"Session could not be established for the account profile {account} and region {region}")
+            print(e)
+        print("Session established ....")
         ec2_client = session.client("ec2")
+        print("Calling the describe placement API ....")
         placement_group_response = ec2_client.describe_placement_groups()
 
         # Iterate over the placement group and use
         # it to filter the instances.
         # Create a dictionary of the data.
+        print("Creating local dictionary ....")
         for group in placement_group_response['PlacementGroups']:
-            placement_group_instance_dict[group['GroupName']] = get_instances_for_placement_group(ec2_client, group['GroupName'])
+            try:
+                placement_group_instance_dict[group['GroupName']] = get_instances_for_placement_group(ec2_client, group['GroupName'])
+            except UnknownClientMethodError as e:
+                print(f"Failed in getting instance info for {group['GroupName']} ....")
 
 
 # Now we write the data in a file using pandas
-pandas.DataFrame.from_dict(placement_group_instance_dict).to_csv('data.csv')
+print("Writing data to local file ....")
+with open('new_data.txt', 'w') as f:
+    f.write("Placement-Group Name:  \t\t\t InstanceIds \n")
+    count = 1
+    for key in placement_group_instance_dict.keys():
+        if placement_group_instance_dict[key] == []:
+            f.write(str(count) + ". " + key + ":  " + "Empty " + "\n")
+            count = count + 1
+        else:
+            f.write(str(count) + ". " + key + ": ")
+            count = count + 1
+            for i in placement_group_instance_dict[key]:
+                for j in i:
+                    f.write(j + ", ")
+            f.write("\n")
+
+
+print("Done ....")
